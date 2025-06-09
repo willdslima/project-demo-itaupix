@@ -1,10 +1,14 @@
 package com.module.pix.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class PixKeyRequestDTO {
+@AllArgsConstructor
+@Builder
+public class PixKeyResponseDTO {
 
     @NotNull(message = "Tipo da chave deve ser informado")
     private String keyType;
