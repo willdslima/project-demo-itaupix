@@ -1,21 +1,30 @@
-package com.module.pix.model;
+package com.module.pix.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.module.pix.enums.KeyTypeEnum;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 @Entity
-public class PixKey {
+@Table(name = "key_px")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PixKeyEntity {
     @Id
     @GeneratedValue
     private UUID id;
+
+    @Enumerated(EnumType.STRING)
     @Column(length = 9, nullable = false)
-    private String keyType;
+    private KeyTypeEnum keyType;
+
     @Column(length = 77, nullable = false, unique = true)
     private String keyValue;
+
     @Column(length = 10, nullable = false)
     private String accountType;
 
@@ -32,9 +41,12 @@ public class PixKey {
     private String lastName;
 
     @Column(nullable = false)
-    private boolean active = true;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    public boolean isActive() {
+        return updatedAt == null;
+    }
 }
