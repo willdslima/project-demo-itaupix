@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum KeyTypeEnum {
     CELULAR,
     EMAIL,
-    CPF,
-    CNPJ,
-    ALEATORIA;
+    CPF;
 
     @JsonCreator
     public static KeyTypeEnum fromString(String valor) {

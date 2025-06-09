@@ -1,5 +1,6 @@
 package com.module.pix.dto;
 
+import com.module.pix.enums.KeyTypeEnum;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import lombok.Data;
 public class PixKeyRequestDTO {
 
     @NotNull(message = "Tipo da chave deve ser informado")
-    private String keyType;
+    private KeyTypeEnum keyType;
 
     @NotBlank(message = "Valor da chave deve ser informado")
     private String keyValue;
