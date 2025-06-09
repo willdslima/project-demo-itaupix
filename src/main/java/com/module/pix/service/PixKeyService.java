@@ -5,9 +5,8 @@ import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.utils.PixKeyValidatorUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 @Service
-public class PixService {
+public class PixKeyService {
     public PixKeyEntity create (PixKeyRequestDTO pixKeyRequest) {
         //Validar o valor da cave, tipos cf, email etcs.
         //utils de validacao
