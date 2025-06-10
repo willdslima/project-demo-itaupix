@@ -2,17 +2,16 @@ package com.module.pix.controller;
 
 import com.module.pix.dto.PixKeyRequestDTO;
 import com.module.pix.dto.PixKeyResponseDTO;
+import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.service.PixKeyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@Validated
 @RestController
 @RequestMapping("/pix")
 public class PixKeyController {
@@ -20,13 +19,8 @@ public class PixKeyController {
     private final PixKeyService pixKeyService;
 
     @PostMapping
-    public ResponseEntity<PixKeyResponseDTO> createPixKey (@Valid @RequestBody PixKeyRequestDTO pixKeyRequestDTO){
-        // Validar tipo de chave
-        // NOK campos, limite e se existe, "Erros distintos"
-        // OK salvar dados complestos
-        // response cadastro realizado
-        pixKeyService.create(pixKeyRequestDTO);
-        return ResponseEntity.ok(PixKeyResponseDTO.builder().build());
+    public ResponseEntity<PixKeyResponseDTO> createPixKey(@Valid @RequestBody PixKeyRequestDTO pixKeyRequestDTO) {
+        return ResponseEntity.ok(pixKeyService.create(pixKeyRequestDTO));
     }
 
     @GetMapping
@@ -41,15 +35,12 @@ public class PixKeyController {
         return ResponseEntity.ok(PixKeyResponseDTO.builder().build());
     }
 
-    @PutMapping("/atualizar")
-    public ResponseEntity<PixKeyResponseDTO> atualizar (@RequestBody PixKeyRequestDTO pixKeyRequestDTO){
-        //busca por id
-        //  desativada (chave inativa) / nao contrada (chave nao encontrada)
-        //  encontrada -> validar campos alteraves, NOK campos invalidos
-        //      atualizar dados permitidos
-        //      response alteracao realizada
-        return ResponseEntity.ok(PixKeyResponseDTO.builder().build());
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PixKeyResponseDTO> update(@PathVariable UUID id, @Valid @RequestBody PixKeyUpdateDTO updateDTO) {
+        return ResponseEntity.ok(pixKeyService.update(id, updateDTO));
     }
+
 
     @PutMapping("/inativar")
     public ResponseEntity<PixKeyResponseDTO> deletar (@RequestBody PixKeyRequestDTO pixKeyRequestDTO){
