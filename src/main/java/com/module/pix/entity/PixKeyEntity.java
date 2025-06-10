@@ -1,5 +1,7 @@
 package com.module.pix.entity;
 
+import com.module.pix.dto.PixKeyRequestDTO;
+import com.module.pix.dto.PixKeyResponseDTO;
 import com.module.pix.enums.KeyTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,4 +51,18 @@ public class PixKeyEntity {
     public boolean isActive() {
         return deactivationDate == null;
     }
+
+    public static PixKeyEntity buildResponseEntity(PixKeyRequestDTO pixKeyRequestDTO) {
+        return PixKeyEntity.builder()
+                .keyType(pixKeyRequestDTO.getKeyType())
+                .keyValue(pixKeyRequestDTO.getKeyValue())
+                .accountType(pixKeyRequestDTO.getAccountType())
+                .agencyNumber(pixKeyRequestDTO.getAgencyNumber())
+                .accountNumber(pixKeyRequestDTO.getAccountNumber())
+                .firstName(pixKeyRequestDTO.getFirstName())
+                .lastName(pixKeyRequestDTO.getLastName())
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
 }

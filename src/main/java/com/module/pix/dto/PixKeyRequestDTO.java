@@ -1,21 +1,23 @@
 package com.module.pix.dto;
 
 import com.module.pix.enums.KeyTypeEnum;
+import com.module.pix.validation.Create;
+import com.module.pix.validation.Update;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class PixKeyRequestDTO {
 
-    @NotNull(message = "Tipo da chave deve ser informado")
+    @NotNull(message = "Tipo da chave deve ser informado", groups = Create.class)
     private KeyTypeEnum keyType;
 
-    @NotBlank(message = "Valor da chave deve ser informado")
+    @NotBlank(message = "Valor da chave deve ser informado", groups = Create.class)
     private String keyValue;
 
-    @NotNull(message = "Tipo da conta deve ser informado")
-    @Pattern(regexp = "corrente|poupanca", flags = Pattern.Flag.CASE_INSENSITIVE, message = "Tipo de conta deve ser 'corrente' ou 'poupanca'")
-    @Size(max = 10, message = "Tipo de conta não pode ultrapassar 10 caracteres")
+    @NotNull(message = "Tipo da conta deve ser informado", groups = {Create.class, Update.class})
+    @Pattern(regexp = "corrente|poupanca", flags = Pattern.Flag.CASE_INSENSITIVE,
+            message = "Tipo de conta deve ser 'corrente' ou 'poupanca'", groups = {Create.class, Update.class})
     private String accountType;
 
     @NotNull(message = "Número da agência deve ser informado")

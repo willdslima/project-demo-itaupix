@@ -3,6 +3,7 @@ package com.module.pix.controller;
 import com.module.pix.dto.PixKeyRequestDTO;
 import com.module.pix.dto.PixKeyResponseDTO;
 import com.module.pix.service.PixKeyService;
+import com.module.pix.validation.Create;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,8 @@ public class PixKeyController {
     private final PixKeyService pixKeyService;
 
     @PostMapping
-    public ResponseEntity<PixKeyResponseDTO> createPixKey (@Valid @RequestBody PixKeyRequestDTO pixKeyRequestDTO){
-        // Validar tipo de chave
-        // NOK campos, limite e se existe, "Erros distintos"
-        // OK salvar dados complestos
-        // response cadastro realizado
-        pixKeyService.create(pixKeyRequestDTO);
-        return ResponseEntity.ok(PixKeyResponseDTO.builder().build());
+    public ResponseEntity<PixKeyResponseDTO> createPixKey(@Validated(Create.class) @Valid @RequestBody PixKeyRequestDTO pixKeyRequestDTO) {
+        return ResponseEntity.ok(pixKeyService.create(pixKeyRequestDTO));
     }
 
     @GetMapping
