@@ -2,9 +2,9 @@ package com.module.pix.service;
 
 import com.module.pix.dto.PixKeyRequestDTO;
 import com.module.pix.dto.PixKeyResponseDTO;
+import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.repository.PixKeyRepository;
-import com.module.pix.validation.PixKeyValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,14 @@ public class PixKeyService {
         PixKeyEntity savedEntity = pixKeyRepository.save(PixKeyEntity.buildResponseEntity(pixKeyRequestDTO));
 
         return PixKeyResponseDTO.buildResponsePixUUID(savedEntity.getId());
+    }
+
+    public PixKeyResponseDTO update(UUID id, PixKeyUpdateDTO pixKeyUpdateDTO) {
+        PixKeyEntity pixKeyEntity = validationService.validateForUpdate(id, pixKeyUpdateDTO);
+
+        PixKeyEntity updated = PixKeyEntity.buildUpdateEntity(pixKeyUpdateDTO, pixKeyEntity);
+
+        return PixKeyResponseDTO.buildResponseUpdatedDTO(pixKeyRepository.save(updated));
     }
 
 }

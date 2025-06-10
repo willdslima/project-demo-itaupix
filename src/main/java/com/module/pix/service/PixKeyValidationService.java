@@ -46,13 +46,7 @@ public class PixKeyValidationService {
         PixKeyEntity existing = pixKeyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chave PIX não encontrada"));
 
-        if (!existing.isActive()) {
-            throw new ValidationException("Chaves PIX inativadas não podem ser alteradas");
-        }
-
-        if (pixKeyUpdateDTO.getKeyType() != null || pixKeyUpdateDTO.getKeyValue() != null || pixKeyUpdateDTO.getId() != null) {
-            throw new ValidationException("Campos 'ID', 'keyType' e 'keyValue' não podem ser alterados");
-        }
+        PixKeyValidatorUtils.validForUpdate(pixKeyUpdateDTO, existing);
 
         return existing;
     }
