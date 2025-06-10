@@ -16,5 +16,4 @@ public enum KeyTypeEnum {
         }
         throw new IllegalArgumentException("Tipo de chave inválido: " + valor);
     }
-
 }

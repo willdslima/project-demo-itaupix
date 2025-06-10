@@ -1,5 +1,7 @@
 package com.module.pix.utils;
 
+import com.module.pix.dto.PixKeyUpdateDTO;
+import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.enums.KeyTypeEnum;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
@@ -22,70 +24,64 @@ public class PixKeyValidatorUtils {
     private static final int PHONE_NUMBER_PART_LENGTH = 9;
 
     private static final int EMAIL_MAX_LENGTH = 77;
-    private static final String EMAIL_PATTERN = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,6}$";
+    private static final String EMAIL_REGEX = "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,6}$";
 
     private static final int CPF_LENGTH = 11;
 
     public static void validateValueByKeyType(KeyTypeEnum keyType, String value) {
+        if (value == null) throw new ValidationException("Valor da chave não pode ser nulo");
+
         switch (keyType) {
-            case CELULAR -> validateCellPhone(value);
-            case EMAIL -> validateEmail(value);
-            case CPF -> validateCPF(value);
+            case CELULAR -> validationCell(value);
+            case EMAIL -> validationMail(value);
+            case CPF -> validationCPF(value);
             default -> throw new ValidationException(ERROR_KEY_TYPE_INVALID);
         }
     }
 
-    private static void validateCellPhone(String value) {
-        if (!startsWithPlus(value)) throw new ValidationException(ERROR_STARTS_WITH_PLUS);
-
-        String digits = value.substring(1);
-        if (!isValidLength(digits, PHONE_MIN_LENGTH, PHONE_MAX_LENGTH)) throw new ValidationException(ERROR_INVALID_LENGTH);
-
-        String numberPart = digits.substring(digits.length() - PHONE_NUMBER_PART_LENGTH);
-        if (!isExactLength(numberPart, PHONE_NUMBER_PART_LENGTH)) throw new ValidationException(ERROR_NUMBER_PART_LENGTH);
-    }
-
-    private static void validateEmail(String value) {
-        if (!containsAt(value)) throw new ValidationException(ERROR_EMAIL_MISSING_AT);
-        if (isTooLong(value, EMAIL_MAX_LENGTH)) throw new ValidationException(ERROR_EMAIL_TOO_LONG);
-        if (!matchesPattern(value, EMAIL_PATTERN)) throw new ValidationException(ERROR_EMAIL_INVALID_FORMAT);
-    }
-
-    private static void validateCPF(String value) {
-        if (!isExactLength(value, CPF_LENGTH) || !isNumeric(value)) throw new ValidationException(ERROR_CPF_INVALID_LENGTH);
+    private static void validationCPF(String value) {
+        if (!value.matches("\\d{" + CPF_LENGTH + "}")) throw new ValidationException(ERROR_CPF_INVALID_LENGTH);
         if (!isValidCPF(value)) throw new ValidationException(ERROR_CPF_INVALID);
     }
 
-    private static boolean startsWithPlus(String value) {
-        return value != null && value.startsWith("+");
+    private static void validationMail(String value) {
+        if (!value.contains("@")) throw new ValidationException(ERROR_EMAIL_MISSING_AT);
+        if (value.length() > EMAIL_MAX_LENGTH) throw new ValidationException(ERROR_EMAIL_TOO_LONG);
+        if (!value.matches(EMAIL_REGEX)) throw new ValidationException(ERROR_EMAIL_INVALID_FORMAT);
     }
 
-    private static boolean isValidLength(String value, int min, int max) {
-        return value != null && value.matches("\\d{" + min + "," + max + "}");
-    }
+    private static void validationCell(String value) {
+        if (!value.startsWith("+")) throw new ValidationException(ERROR_STARTS_WITH_PLUS);
 
-    private static boolean isExactLength(String value, int length) {
-        return value != null && value.length() == length && value.matches("\\d{" + length + "}");
-    }
+        String digits = value.substring(1);
+        if (!digits.matches("\\d{" + PHONE_MIN_LENGTH + "," + PHONE_MAX_LENGTH + "}"))
+            throw new ValidationException(ERROR_INVALID_LENGTH);
 
-    private static boolean isNumeric(String value) {
-        return value != null && value.matches("\\d+");
-    }
-
-    private static boolean containsAt(String value) {
-        return value != null && value.contains("@");
-    }
-
-    private static boolean isTooLong(String value, int maxLength) {
-        return value != null && value.length() > maxLength;
-    }
-
-    private static boolean matchesPattern(String value, String regex) {
-        return value != null && value.matches(regex);
+        String numberPart = digits.substring(digits.length() - PHONE_NUMBER_PART_LENGTH);
+        if (!numberPart.matches("\\d{" + PHONE_NUMBER_PART_LENGTH + "}"))
+            throw new ValidationException(ERROR_NUMBER_PART_LENGTH);
     }
 
     public static boolean isValidCPF(String cpf) {
-        // TODO validador de CPF EXTERNO
+        // TODO: Implementar validação real de CPF
         return true;
+    }
+
+    public static void validForUpdate(PixKeyUpdateDTO pixKeyUpdateDTO, PixKeyEntity existing) {
+        if (!existing.isActive()) {
+            throw new ValidationException("Chaves PIX inativadas não podem ser alteradas");
+        }
+
+        if (pixKeyUpdateDTO.getId() != null) {
+            throw new ValidationException("Campo 'ID' não pode ser alterado");
+        }
+
+        if (pixKeyUpdateDTO.getKeyType() != null) {
+            throw new ValidationException("Campo 'keyType' não pode ser alterado");
+        }
+
+        if (pixKeyUpdateDTO.getKeyValue() != null) {
+            throw new ValidationException("Campo 'keyValue' não pode ser alterado");
+        }
     }
 }

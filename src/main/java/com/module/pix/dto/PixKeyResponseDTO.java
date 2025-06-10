@@ -1,17 +1,17 @@
 package com.module.pix.dto;
 
-import com.module.pix.entity.PixKeyEntity;
-import com.module.pix.enums.KeyTypeEnum;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.module.pix.entity.PixKeyEntity;
+import com.module.pix.enums.KeyTypeEnum;
+
+import lombok.Builder;
+import lombok.Data;
+
 @Data
-@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public class PixKeyResponseDTO {
 
@@ -26,9 +26,24 @@ public class PixKeyResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static PixKeyResponseDTO buildPixUUID(PixKeyEntity pixKey) {
+    public static PixKeyResponseDTO buildResponsePixUUID(UUID id) {
         return PixKeyResponseDTO.builder()
-                .id(pixKey.getId())
+                .id(id)
+                .build();
+    }
+
+    public static PixKeyResponseDTO buildResponseUpdatedDTO(PixKeyEntity pixKeyEntity) {
+        return PixKeyResponseDTO.builder()
+                .id(pixKeyEntity.getId())
+                .keyType(pixKeyEntity.getKeyType())
+                .keyValue(pixKeyEntity.getKeyValue())
+                .accountType(pixKeyEntity.getAccountType())
+                .agencyNumber(pixKeyEntity.getAgencyNumber())
+                .accountNumber(pixKeyEntity.getAccountNumber())
+                .firstName(pixKeyEntity.getFirstName())
+                .lastName(pixKeyEntity.getLastName() != null ? pixKeyEntity.getLastName() : "")
+                .createdAt(pixKeyEntity.getCreatedAt())
+                .updatedAt(pixKeyEntity.getUpdatedAt())
                 .build();
     }
 
