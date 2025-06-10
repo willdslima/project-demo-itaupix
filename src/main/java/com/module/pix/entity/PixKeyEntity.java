@@ -43,10 +43,10 @@ public class PixKeyEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    @Column
+    private LocalDateTime deactivationDate;
 
     public boolean isActive() {
-        return updatedAt == null;
+        return deactivationDate == null;
     }
 }

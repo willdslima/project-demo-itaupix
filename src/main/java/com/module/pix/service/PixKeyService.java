@@ -2,27 +2,49 @@ package com.module.pix.service;
 
 import com.module.pix.dto.PixKeyRequestDTO;
 import com.module.pix.entity.PixKeyEntity;
+import com.module.pix.repository.PixKeyRepository;
 import com.module.pix.utils.PixKeyValidatorUtils;
+import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
+@RequiredArgsConstructor
 public class PixKeyService {
-    public PixKeyEntity create (PixKeyRequestDTO pixKeyRequest) {
-        //Validar o valor da cave, tipos cf, email etcs.
-        //utils de validacao
-        PixKeyValidatorUtils.validateValueByKeyType(pixKeyRequest.getKeyType(), pixKeyRequest.getKeyValue());
 
+    private final PixKeyRepository pixKeyRepository;
 
-        //buscar chave ativa no banco
-        //repositorios
+    public PixKeyEntity create(PixKeyRequestDTO request) {
 
-        //definir limite maximo de chaves
+        PixKeyValidatorUtils.validateValueByKeyType(request.getKeyType(), request.getKeyValue());
 
-        // verificar se exiete chave com esse valor para de todos correntistas
+        List<PixKeyEntity> activeKeys = pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+                request.getAgencyNumber(), request.getAccountNumber());
 
-        // construir objeto  final para salvar
+        if (activeKeys.size() >= 5) {
+            throw new ValidationException("Limite de chaves para esta conta foi atingido: " + 5);
+        }
 
+        boolean exists = pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull(request.getKeyValue());
+        if (exists) {
+            throw new ValidationException("Chave já existe para outro correntista.");
+        }
 
-        return null;
+        PixKeyEntity pixKey = PixKeyEntity.builder()
+                .keyType(request.getKeyType())
+                .keyValue(request.getKeyValue())
+                .accountType(request.getAccountType())
+                .agencyNumber(request.getAgencyNumber())
+                .accountNumber(request.getAccountNumber())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return pixKeyRepository.save(pixKey);
     }
+
 }
