@@ -6,16 +6,17 @@ import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.exception.ResourceNotFoundException;
 import com.module.pix.repository.PixKeyRepository;
-import com.module.pix.utils.PixKeySpecificationBuilder;
+import com.module.pix.utils.builder.PixKeySpecificationBuilder;
 import com.module.pix.utils.PixKeyValidatorUtils;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PixKeyValidationService {
@@ -23,6 +24,7 @@ public class PixKeyValidationService {
     private final PixKeyRepository pixKeyRepository;
 
     public void validateForCreated(PixKeyRequestDTO pixKeyRequestDTO) {
+        log.info("Validando chave PIX para criação: {}", pixKeyRequestDTO.getKeyValue());
         PixKeyValidatorUtils.validateValueByKeyType(pixKeyRequestDTO.getKeyType(), pixKeyRequestDTO.getKeyValue());
 
         validateDuplicateKey(pixKeyRequestDTO);
@@ -31,6 +33,7 @@ public class PixKeyValidationService {
 
     private void validateDuplicateKey(PixKeyRequestDTO pixKeyRequestDTO) {
         boolean exists = pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull(pixKeyRequestDTO.getKeyValue());
+        log.info("Verificação de chave duplicada: {}", exists);
         if (exists) {
             throw new ValidationException("Chave já existe para outro correntista.");
         }
@@ -39,6 +42,7 @@ public class PixKeyValidationService {
     private void validateAccountKeyLimit(PixKeyRequestDTO pixKeyRequestDTO) {
         List<?> activeKeys = pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
                 pixKeyRequestDTO.getAgencyNumber(), pixKeyRequestDTO.getAccountNumber());
+        log.info("Chaves ativas encontradas para conta: {}", activeKeys.size());
 
         if (activeKeys.size() >= 5) {
             throw new ValidationException("Limite de chaves para esta conta foi atingido: 5");
@@ -46,8 +50,13 @@ public class PixKeyValidationService {
     }
 
     public PixKeyEntity validateForUpdate(UUID id, PixKeyUpdateDTO pixKeyUpdateDTO) {
+        log.info("Validando chave PIX para atualização. ID: {}", id);
         PixKeyEntity existing = pixKeyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chave PIX não encontrada"));
+
+        if (existing.getDeactivationDate() != null) {
+            throw new ValidationException("Chave PIX desativada não pode ser atualizada.");
+        }
 
         PixKeyValidatorUtils.validForUpdate(pixKeyUpdateDTO, existing);
 
@@ -55,6 +64,8 @@ public class PixKeyValidationService {
     }
 
     public Specification<PixKeyEntity> validateFilterForSearch(PixKeySearchDTO filter) {
+        log.info("Validando filtros para consulta: {}", filter);
+
         boolean hasId = filter.getId() != null;
         boolean hasKeyType = filter.getKeyType() != null;
         boolean hasAgencyNumber = filter.getAgencyNumber() != null;

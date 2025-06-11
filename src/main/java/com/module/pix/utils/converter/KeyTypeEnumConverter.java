@@ -1,4 +1,4 @@
-package com.module.pix.utils;
+package com.module.pix.utils.converter;
 
 import com.module.pix.enums.KeyTypeEnum;
 import org.springframework.core.convert.converter.Converter;
