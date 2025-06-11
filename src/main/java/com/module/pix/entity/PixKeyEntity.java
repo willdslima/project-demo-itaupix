@@ -48,13 +48,6 @@ public class PixKeyEntity {
     @Column
     private LocalDateTime updatedAt;
 
-    @Column
-    private LocalDateTime deactivationDate;
-
-
-    public boolean isActive() {
-        return deactivationDate == null;
-    }
 
     public static PixKeyEntity buildResponseEntity(PixKeyRequestDTO pixKeyRequestDTO) {
         return PixKeyEntity.builder()

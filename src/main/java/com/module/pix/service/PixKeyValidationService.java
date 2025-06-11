@@ -40,7 +40,7 @@ public class PixKeyValidationService {
     }
 
     private void validateAccountKeyLimit(PixKeyRequestDTO pixKeyRequestDTO) {
-        List<?> activeKeys = pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+        List<?> activeKeys = pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 pixKeyRequestDTO.getAgencyNumber(), pixKeyRequestDTO.getAccountNumber());
         log.info("Chaves ativas encontradas para conta: {}", activeKeys.size());
 
@@ -53,10 +53,6 @@ public class PixKeyValidationService {
         log.info("Validando chave PIX para atualização. ID: {}", id);
         PixKeyEntity existing = pixKeyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Chave PIX não encontrada"));
-
-        if (existing.getDeactivationDate() != null) {
-            throw new ValidationException("Chave PIX desativada não pode ser atualizada.");
-        }
 
         PixKeyValidatorUtils.validForUpdate(pixKeyUpdateDTO, existing);
 

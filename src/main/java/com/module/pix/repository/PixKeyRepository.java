@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface PixKeyRepository extends JpaRepository<PixKeyEntity, UUID>, JpaSpecificationExecutor<PixKeyEntity> {
 
-    List<PixKeyEntity> findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(Integer agencyNumber,
+    List<PixKeyEntity> findByAgencyNumberAndAccountNumber(Integer agencyNumber,
             Integer accountNumber);
 
     boolean existsByKeyValueAndDeactivationDateIsNull(String keyValue);

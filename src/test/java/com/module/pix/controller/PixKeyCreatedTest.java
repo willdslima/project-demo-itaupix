@@ -55,7 +55,7 @@ class PixKeyCreatedTest {
         request.setLastName("Silva");
 
         when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("12345678909")).thenReturn(false);
-        when(pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+        when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(),request.getAccountNumber())).thenReturn(List.of());
 
         when(pixKeyRepository.save(any())).thenAnswer(invocation -> {
@@ -84,7 +84,7 @@ class PixKeyCreatedTest {
         request.setLastName("Souza");
 
         when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("+5511998765432")).thenReturn(false);
-        when(pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+        when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(), request.getAccountNumber())).thenReturn(List.of());
 
         when(pixKeyRepository.save(any())).thenAnswer(invocation -> {
@@ -114,7 +114,7 @@ class PixKeyCreatedTest {
         request.setLastName("Santos");
 
         when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("maria.santos@email.com")).thenReturn(false);
-        when(pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+        when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(), request.getAccountNumber())).thenReturn(List.of());
 
         when(pixKeyRepository.save(any())).thenAnswer(invocation -> {
@@ -304,7 +304,7 @@ class PixKeyCreatedTest {
                         .build())
                 .collect(Collectors.toList());
 
-        when(pixKeyRepository.findByAgencyNumberAndAccountNumberAndDeactivationDateIsNull(
+        when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(), request.getAccountNumber()))
                 .thenReturn(existingKeys);
 

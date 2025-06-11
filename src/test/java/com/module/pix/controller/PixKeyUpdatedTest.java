@@ -51,7 +51,6 @@ class PixKeyUpdatedTest {
         entityExistente.setAgencyNumber(1234);
         entityExistente.setAccountNumber(56781234);
         entityExistente.setAccountType("corrente");
-        entityExistente.setDeactivationDate(null);
 
         PixKeyUpdateDTO updateDTO = new PixKeyUpdateDTO();
         updateDTO.setFirstName("Ana Paula");

@@ -21,5 +21,4 @@ public class PixKeySearchDTO {
     private String lastName;
     private String createdAt;
     private String updatedAt;
-    private String deactivationDate;
 }
