@@ -2,6 +2,7 @@ package com.module.pix.controller;
 
 import com.module.pix.dto.PixKeyRequestDTO;
 import com.module.pix.dto.PixKeyResponseDTO;
+import com.module.pix.dto.PixKeySearchDTO;
 import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.service.PixKeyService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -23,16 +25,9 @@ public class PixKeyController {
         return ResponseEntity.ok(pixKeyService.create(pixKeyRequestDTO));
     }
 
-    @GetMapping
-    public ResponseEntity<PixKeyResponseDTO> pesquisar (@RequestBody PixKeyRequestDTO pixKeyRequestDTO){
-        // Consultar por id?
-        //      yes, busca por id (if else de encontrado ou dados
-        //      no, filtros validos? (case )
-        //           no-> response filtros invalidos ou combinados
-        //           yes-> busca por filtros
-        //      busca: nok nao encontrado / ok retorna lista de chaves
-
-        return ResponseEntity.ok(PixKeyResponseDTO.builder().build());
+    @GetMapping("/search")
+    public ResponseEntity<List<PixKeyResponseDTO>> getPixKeys(@Valid PixKeySearchDTO pixKeySearchDTO) {
+        return ResponseEntity.ok(pixKeyService.getPixKeys(pixKeySearchDTO));
     }
 
 

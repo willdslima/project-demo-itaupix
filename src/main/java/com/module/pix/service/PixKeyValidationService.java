@@ -1,13 +1,16 @@
 package com.module.pix.service;
 
 import com.module.pix.dto.PixKeyRequestDTO;
+import com.module.pix.dto.PixKeySearchDTO;
 import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.exception.ResourceNotFoundException;
 import com.module.pix.repository.PixKeyRepository;
+import com.module.pix.utils.PixKeySpecificationBuilder;
 import com.module.pix.utils.PixKeyValidatorUtils;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +52,33 @@ public class PixKeyValidationService {
         PixKeyValidatorUtils.validForUpdate(pixKeyUpdateDTO, existing);
 
         return existing;
+    }
+
+    public Specification<PixKeyEntity> validateFilterForSearch(PixKeySearchDTO filter) {
+        boolean hasId = filter.getId() != null;
+        boolean hasKeyType = filter.getKeyType() != null;
+        boolean hasAgencyNumber = filter.getAgencyNumber() != null;
+        boolean hasAccountNumber = filter.getAccountNumber() != null;
+        boolean hasFirstName = filter.getFirstName() != null && !filter.getFirstName().isBlank();
+        boolean hasInclusionDate = filter.getCreatedAt() != null;
+        boolean hasUpdatedDate = filter.getUpdatedAt() != null;
+
+        boolean hasAllFilters = hasKeyType || hasAgencyNumber || hasAccountNumber || hasFirstName || hasInclusionDate || hasUpdatedDate;
+
+        if (hasId && hasAllFilters) {
+            throw new ValidationException("Quando o ID é informado, nenhum outro filtro pode ser usado.");
+        }
+
+        if (!hasId && !hasAllFilters) {
+            throw new ValidationException("Pelo menos um filtro deve ser informado.");
+        }
+
+        if (hasInclusionDate && hasUpdatedDate) {
+            throw new ValidationException("Não é permitido combinar Data de Inclusão e Data de Atualizacao.");
+        }
+
+
+        return PixKeySpecificationBuilder.buildSpecificFilter(filter);
     }
 
 }

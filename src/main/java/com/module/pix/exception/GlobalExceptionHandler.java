@@ -18,6 +18,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(Map.of("error", message));
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleInvalidFormat(HttpMessageNotReadableException ex) {
@@ -27,18 +30,17 @@ public class GlobalExceptionHandler {
             String fieldName = formatEx.getPath().stream()
                     .map(JsonMappingException.Reference::getFieldName)
                     .findFirst()
-                    .orElse("campo"); // Caso não consiga, usa "campo" genérico
+                    .orElse("campo");
 
             message = String.format("Campo '%s' está em formato inválido", fieldName);
         }
 
-        return ResponseEntity.unprocessableEntity().body(Map.of("error", message));
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
@@ -46,16 +48,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.unprocessableEntity().body(errors);
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(ValidationException ex) {
-        return ResponseEntity.unprocessableEntity()
-                .body(Map.of("error", ex.getMessage()));
+    @ExceptionHandler({
+            ValidationException.class,
+            UnprocessableEntityException.class
+    })
+    public ResponseEntity<Map<String, String>> handle422Exceptions(RuntimeException ex) {
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFoundException(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", ex.getMessage()));
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -63,20 +66,11 @@ public class GlobalExceptionHandler {
         String paramName = ex.getName();
         Object invalidValue = ex.getValue();
         Class<?> expectedType = ex.getRequiredType();
-
         String expectedTypeName = (expectedType != null) ? expectedType.getSimpleName() : "tipo desconhecido";
 
         String message = String.format("Parâmetro '%s' com valor inválido: '%s'. Esperado tipo: %s.",
                 paramName, invalidValue, expectedTypeName);
 
-        return ResponseEntity.badRequest().body(Map.of("error", message));
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
-
-    @ExceptionHandler(UnprocessableEntityException.class)
-    public ResponseEntity<Map<String, String>> handleUnprocessableEntityException(UnprocessableEntityException ex) {
-        return ResponseEntity.unprocessableEntity()
-                .body(Map.of("error", ex.getMessage()));
-    }
-
-
 }
