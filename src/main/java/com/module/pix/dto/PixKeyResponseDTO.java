@@ -1,6 +1,7 @@
 package com.module.pix.dto;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,6 +26,7 @@ public class PixKeyResponseDTO {
     private String lastName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deactivationDate;
 
     public static PixKeyResponseDTO buildResponsePixUUID(UUID id) {
         return PixKeyResponseDTO.builder()
@@ -32,19 +34,19 @@ public class PixKeyResponseDTO {
                 .build();
     }
 
-    public static PixKeyResponseDTO buildResponseUpdatedDTO(PixKeyEntity pixKeyEntity) {
+    public static PixKeyResponseDTO buildResponseDTO(PixKeyEntity entity) {
         return PixKeyResponseDTO.builder()
-                .id(pixKeyEntity.getId())
-                .keyType(pixKeyEntity.getKeyType())
-                .keyValue(pixKeyEntity.getKeyValue())
-                .accountType(pixKeyEntity.getAccountType())
-                .agencyNumber(pixKeyEntity.getAgencyNumber())
-                .accountNumber(pixKeyEntity.getAccountNumber())
-                .firstName(pixKeyEntity.getFirstName())
-                .lastName(pixKeyEntity.getLastName() != null ? pixKeyEntity.getLastName() : "")
-                .createdAt(pixKeyEntity.getCreatedAt())
-                .updatedAt(pixKeyEntity.getUpdatedAt())
+                .id(entity.getId())
+                .keyType(entity.getKeyType())
+                .keyValue(entity.getKeyValue())
+                .accountType(entity.getAccountType())
+                .agencyNumber(entity.getAgencyNumber())
+                .accountNumber(entity.getAccountNumber())
+                .firstName(entity.getFirstName())
+                .lastName(Optional.ofNullable(entity.getLastName()).orElse(""))
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .deactivationDate(entity.getDeactivationDate())
                 .build();
     }
-
 }
