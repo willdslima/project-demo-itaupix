@@ -32,9 +32,6 @@ public class PixKeyResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime deactivationDate;
-
     public static PixKeyResponseDTO buildResponsePixUUID(UUID id) {
         return PixKeyResponseDTO.builder()
                 .id(id)
@@ -53,7 +50,6 @@ public class PixKeyResponseDTO {
                 .lastName(Optional.ofNullable(entity.getLastName()).orElse(""))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
-                .deactivationDate(entity.getDeactivationDate())
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.module.pix.exception;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -14,8 +15,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String message) {
@@ -35,6 +36,7 @@ public class GlobalExceptionHandler {
             message = String.format("Campo '%s' está em formato inválido", fieldName);
         }
 
+        log.warn("Erro de leitura da mensagem JSON: {}", message, ex);
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 
@@ -45,6 +47,7 @@ public class GlobalExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage())
         );
 
+        log.warn("Erro de validação: {}", errors);
         return ResponseEntity.unprocessableEntity().body(errors);
     }
 
@@ -53,11 +56,13 @@ public class GlobalExceptionHandler {
             UnprocessableEntityException.class
     })
     public ResponseEntity<Map<String, String>> handle422Exceptions(RuntimeException ex) {
+        log.warn("Exceção 422 tratada: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFoundException(ResourceNotFoundException ex) {
+        log.warn("Recurso não encontrado: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
@@ -71,6 +76,7 @@ public class GlobalExceptionHandler {
         String message = String.format("Parâmetro '%s' com valor inválido: '%s'. Esperado tipo: %s.",
                 paramName, invalidValue, expectedTypeName);
 
+        log.warn("Erro de tipo em parâmetro: {}", message);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 }

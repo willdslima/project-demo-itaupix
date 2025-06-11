@@ -68,10 +68,6 @@ public class PixKeyValidatorUtils {
     }
 
     public static void validForUpdate(PixKeyUpdateDTO pixKeyUpdateDTO, PixKeyEntity existing) {
-        if (!existing.isActive()) {
-            throw new ValidationException("Chaves PIX inativadas não podem ser alteradas");
-        }
-
         if (pixKeyUpdateDTO.getId() != null) {
             throw new ValidationException("Campo 'ID' não pode ser alterado");
         }
