@@ -19,8 +19,7 @@ public class PixKeySearchDTO {
     private Integer accountNumber;
     private String firstName;
     private String lastName;
-
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
-    private LocalDate deactivationDate;
+    private String createdAt;
+    private String updatedAt;
+    private String deactivationDate;
 }

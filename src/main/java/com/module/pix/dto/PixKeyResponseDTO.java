@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.enums.KeyTypeEnum;
@@ -24,8 +25,14 @@ public class PixKeyResponseDTO {
     private Integer accountNumber;
     private String firstName;
     private String lastName;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime deactivationDate;
 
     public static PixKeyResponseDTO buildResponsePixUUID(UUID id) {
