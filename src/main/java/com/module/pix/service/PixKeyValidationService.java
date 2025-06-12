@@ -32,7 +32,7 @@ public class PixKeyValidationService {
     }
 
     private void validateDuplicateKey(PixKeyRequestDTO pixKeyRequestDTO) {
-        boolean exists = pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull(pixKeyRequestDTO.getKeyValue());
+        boolean exists = pixKeyRepository.existsByKeyValue(pixKeyRequestDTO.getKeyValue());
         log.info("Verificação de chave duplicada: {}", exists);
         if (exists) {
             throw new ValidationException("Chave já existe para outro correntista.");

@@ -6,14 +6,12 @@ import com.module.pix.dto.PixKeySearchDTO;
 import com.module.pix.dto.PixKeyUpdateDTO;
 import com.module.pix.entity.PixKeyEntity;
 import com.module.pix.exception.ResourceNotFoundException;
-import com.module.pix.exception.UnprocessableEntityException;
 import com.module.pix.repository.PixKeyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,11 +22,11 @@ import java.util.stream.Collectors;
 public class PixKeyService {
 
     private final PixKeyRepository pixKeyRepository;
-    private final PixKeyValidationService validationService;
+    private final PixKeyValidationService pixKeyValidationService;
 
     public PixKeyResponseDTO create(PixKeyRequestDTO pixKeyRequestDTO) {
         log.info("Iniciando criação da chave PIX para conta/agência: {}/{}", pixKeyRequestDTO.getAccountNumber(), pixKeyRequestDTO.getAgencyNumber());
-        validationService.validateForCreated(pixKeyRequestDTO);
+        pixKeyValidationService.validateForCreated(pixKeyRequestDTO);
 
         PixKeyEntity savedEntity = pixKeyRepository.save(PixKeyEntity.buildResponseEntity(pixKeyRequestDTO));
         log.info("Chave PIX criada com sucesso. ID: {}", savedEntity.getId());
@@ -37,15 +35,16 @@ public class PixKeyService {
 
     public PixKeyResponseDTO update(UUID id, PixKeyUpdateDTO pixKeyUpdateDTO) {
         log.info("Iniciando atualização da chave PIX com ID: {}", id);
-        PixKeyEntity pixKeyEntity = validationService.validateForUpdate(id, pixKeyUpdateDTO);
-        PixKeyEntity updated = PixKeyEntity.buildUpdateEntity(pixKeyUpdateDTO, pixKeyEntity);
+        PixKeyEntity pixKeyEntity = pixKeyValidationService.validateForUpdate(id, pixKeyUpdateDTO);
 
-        return PixKeyResponseDTO.buildResponseDTO(pixKeyRepository.save(updated));
+        PixKeyEntity savedEntity = pixKeyRepository.save(PixKeyEntity.buildUpdateEntity(pixKeyUpdateDTO, pixKeyEntity));
+        log.info("Chave PIX atualizada com sucesso. ID: {}", savedEntity.getId());
+        return PixKeyResponseDTO.buildResponseDTO(savedEntity);
     }
 
     public List<PixKeyResponseDTO> getPixKeys(PixKeySearchDTO pixKeySearchDTO) {
         log.info("Iniciando consulta de chaves PIX com filtros: {}", pixKeySearchDTO);
-        Specification<PixKeyEntity> specification = validationService.validateFilterForSearch(pixKeySearchDTO);
+        Specification<PixKeyEntity> specification = pixKeyValidationService.validateFilterForSearch(pixKeySearchDTO);
 
         List<PixKeyEntity> pixKeys = pixKeyRepository.findAll(specification);
 

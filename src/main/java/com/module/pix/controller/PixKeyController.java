@@ -30,12 +30,10 @@ public class PixKeyController {
         return ResponseEntity.ok(pixKeyService.getPixKeys(pixKeySearchDTO));
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<PixKeyResponseDTO> update(@PathVariable UUID id, @Valid @RequestBody PixKeyUpdateDTO updateDTO) {
         return ResponseEntity.ok(pixKeyService.update(id, updateDTO));
     }
-
 
     @PutMapping("/inativar")
     public ResponseEntity<PixKeyResponseDTO> deletar (@RequestBody PixKeyRequestDTO pixKeyRequestDTO){
