@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,7 +52,7 @@ class PixKeyCreatedTest {
         request.setFirstName("Ana");
         request.setLastName("Silva");
 
-        when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("12345678909")).thenReturn(false);
+        when(pixKeyRepository.existsByKeyValue("12345678909")).thenReturn(false);
         when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(),request.getAccountNumber())).thenReturn(List.of());
 
@@ -83,7 +81,7 @@ class PixKeyCreatedTest {
         request.setFirstName("Carlos");
         request.setLastName("Souza");
 
-        when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("+5511998765432")).thenReturn(false);
+        when(pixKeyRepository.existsByKeyValue("+5511998765432")).thenReturn(false);
         when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(), request.getAccountNumber())).thenReturn(List.of());
 
@@ -113,7 +111,7 @@ class PixKeyCreatedTest {
         request.setFirstName("Maria");
         request.setLastName("Santos");
 
-        when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("maria.santos@email.com")).thenReturn(false);
+        when(pixKeyRepository.existsByKeyValue("maria.santos@email.com")).thenReturn(false);
         when(pixKeyRepository.findByAgencyNumberAndAccountNumber(
                 request.getAgencyNumber(), request.getAccountNumber())).thenReturn(List.of());
 
@@ -269,7 +267,7 @@ class PixKeyCreatedTest {
         request.setFirstName("Ana");
         request.setLastName("Silva");
 
-        when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull("12345678909")).thenReturn(true);
+        when(pixKeyRepository.existsByKeyValue("12345678909")).thenReturn(true);
 
         ValidationException ex = assertThrows(ValidationException.class, () -> {
             pixKeyController.createPixKey(request);
@@ -289,7 +287,7 @@ class PixKeyCreatedTest {
         request.setFirstName("Carlos");
         request.setLastName("Souza");
 
-        when(pixKeyRepository.existsByKeyValueAndDeactivationDateIsNull(request.getKeyValue())).thenReturn(false);
+        when(pixKeyRepository.existsByKeyValue(request.getKeyValue())).thenReturn(false);
 
         List<PixKeyEntity> existingKeys = IntStream.range(0, 5)
                 .mapToObj(i -> PixKeyEntity.builder()

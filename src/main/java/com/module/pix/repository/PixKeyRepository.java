@@ -14,6 +14,6 @@ public interface PixKeyRepository extends JpaRepository<PixKeyEntity, UUID>, Jpa
     List<PixKeyEntity> findByAgencyNumberAndAccountNumber(Integer agencyNumber,
             Integer accountNumber);
 
-    boolean existsByKeyValueAndDeactivationDateIsNull(String keyValue);
+    boolean existsByKeyValue(String keyValue);
 
 }
